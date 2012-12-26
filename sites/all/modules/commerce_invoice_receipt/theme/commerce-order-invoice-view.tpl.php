@@ -46,8 +46,6 @@
                             <br/>
                             <b><?php print t('Email Address:'); ?></b> <?php print $info['order_mail']; ?><br/>
                             <br/>
-                            <b><?php print t('Shipping Address:'); ?></b><br />
-                            <?php print isset($info['customer_shipping']) ? $info['customer_shipping'] : ''; ?><br />
                           </td>
                         </tr>
                       </table>
@@ -81,14 +79,14 @@
 		Informazioni per il pagamento</h2>
     <p>
         Caro Rotaractiano,<br />
-        Abbiamo ricevuto la tua prenotazione. Di seguito trovi i dati ricapitolativi da
-        te selezionati.
+        Abbiamo ricevuto la tua prenotazione. Di seguito trovi una sintesi dei dati da te inseriti.
     </p>
     <p>
         Ti ricordiamo che hai 7 giorni* per inviare al seguente indirizzo mail: 
         <a href="mailto:treasurer@dreamonthelake.it">treasurer@dreamonthelake.it</a>&nbsp;
-        una mail con allegata la copia dell’avvenuto bonifico dell’esatto importo sotto
+        una mail con allegata la copia dell’avvenuto bonifico dell’esatto importo sopra
         riportato.<br />
+        Sei pregato di non rispondere direttamente a questa email in quanto è generata in automatico <br />
         Riceverai una mail di conferma una volta che il tuo ordine sarà stato processato e confermato dallo staff del Congresso Nazionale Rotaract
     </p>
 <p>
@@ -121,14 +119,14 @@
 		Payment Information</h2>
     <p>
         Dear Rotaract member,<br />
-        We have received your booking request. Hereby you will find all the details regarding
-        your selections.
+        We have received your booking request. Hereby you will find all the details regarding your selections.
     </p>
     <p>
         We would like to inform you that you are required to send an email, within 7 days
         upon the receipt of this form, to the following email address: 
         <a href="mailto:treasurer@dreamonthelake.it">treasurer@dreamonthelake.it</a>&nbsp;
         containing an attached copy of the payment of the exact amount written below. <br />
+        This is an automatically generated email, please do not replay to this address <br />
         You're going to receive a final confirmation email once your order is processed and accepted by the Congresso Nazionale Rotaract staff
     </p>
 <p>
