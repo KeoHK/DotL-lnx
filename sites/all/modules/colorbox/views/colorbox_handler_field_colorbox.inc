@@ -193,3 +193,8 @@ If you would like to have the characters %5B and %5D please use the html entity 
     return $link_tag . '<div style="display: none;"><div id="colorbox-inline-' . $i . '">' . $popup . '</div></div>';
   }
 }
+
+    // div is hidden it won't show up as a Colorbox.
+    return $link_tag . '<div style="display: none;"><div id="colorbox-inline-' . $i . '">' . $popup . '</div></div>';
+  }
+}

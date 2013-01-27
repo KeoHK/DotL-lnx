@@ -919,3 +919,29 @@ function entity_metadata_field_query($entity_type, $property, $value, $limit) {
   $result = $query->execute();
   return !empty($result[$entity_type]) ? array_keys($result[$entity_type]) : array();
 }
+dQuery();
+  $query->entityCondition('entity_type', $entity_type, '=')
+        ->propertyCondition($info['schema field'], $value, is_array($value) ? 'IN' : '=')
+        ->range(0, $limit);
+
+  $result = $query->execute();
+  return !empty($result[$entity_type]) ? array_keys($result[$entity_type]) : array();
+}
+
+/**
+ * Callback for querying entities by field values. This function just queries
+ * for the value of the first specified column. Also it is only suitable for
+ * fields that don't process the data, so it's stored the same way as returned.
+ */
+function entity_metadata_field_query($entity_type, $property, $value, $limit) {
+  $query = new EntityFieldQuery();
+  $field = field_info_field($property);
+  $columns = array_keys($field['columns']);
+
+  $query->entityCondition('entity_type', $entity_type, '=')
+        ->fieldCondition($field, $columns[0], $value, is_array($value) ? 'IN' : '=')
+        ->range(0, $limit);
+
+  $result = $query->execute();
+  return !empty($result[$entity_type]) ? array_keys($result[$entity_type]) : array();
+}

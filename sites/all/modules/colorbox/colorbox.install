@@ -116,3 +116,6 @@ function colorbox_update_7202() {
   return $ret;
 }
 
+;
+}
+

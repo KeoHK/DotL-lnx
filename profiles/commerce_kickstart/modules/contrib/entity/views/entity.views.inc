@@ -632,3 +632,6 @@ class EntityDefaultViewsController {
     return $wrapper->optionsList($op);
   }
 }
+er->optionsList($op);
+  }
+}

@@ -232,3 +232,13 @@ function _commerce_invoice_receipt_get_invoice_info($order, $build) {
   
   return $info;
 }
+['commerce_order'][$order->order_id]['field_guests_info'])) {
+    $info['guests_info'] = $build['commerce_order'][$order->order_id]['field_guests_info'];
+  }
+  
+  if (isset($build['commerce_order'][$order->order_id]['field_order_barcode'])) {
+    $info['order_barcode'] = $build['commerce_order'][$order->order_id]['field_order_barcode'][0]['#markup'];
+  }
+  
+  return $info;
+}

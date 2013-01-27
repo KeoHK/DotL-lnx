@@ -170,3 +170,12 @@ function splashify_help($path, $arg) {
   }
 }
 
+e would become a nuisance).") . '</p>';
+      $output .= '<p>' . t('We determine how often the splash page should show up by what is defined under the "When" tab.') . '</p>';
+
+      $output .= '<h3>' . t('Caching') . '</h3>';
+      $output .= '<p>' . t('The only default cache settings that we found to break the splash functionality is if you set "Cache pages for anonymous users" to be on. This will cause the same splash page to show up over and over again for anonymous users.') . '</p>';
+      return $output;
+  }
+}
+

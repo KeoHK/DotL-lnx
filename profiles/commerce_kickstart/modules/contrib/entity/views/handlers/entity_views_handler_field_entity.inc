@@ -197,3 +197,9 @@ class entity_views_handler_field_entity extends views_handler_field {
   }
 
 }
+ue($value);
+
+    return $value;
+  }
+
+}

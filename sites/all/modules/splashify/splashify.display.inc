@@ -424,3 +424,12 @@ function _splashify_get_config() {
     'how_size' => $how_size,
   );
 }
+ite' => $where_opposite,
+    'what_mode' => $what_mode,
+    'what_content' => $what_content,
+    'what_content_value' => $what_content_value,
+    'what_content_title' => $what_content_title,
+    'how_mode' => $how_mode,
+    'how_size' => $how_size,
+  );
+}

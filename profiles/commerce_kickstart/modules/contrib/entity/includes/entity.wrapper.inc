@@ -1183,3 +1183,19 @@ class EntityMetadataArrayObject implements ArrayAccess, Countable, IteratorAggre
     return new ArrayIterator($this->data);
   }
 }
+
+    $this->data[$delta] = $value;
+  }
+
+  public function offsetUnset($delta) {
+    unset($this->data[$delta]);
+  }
+
+  public function count() {
+    return count($this->data);
+  }
+
+  public function getIterator() {
+    return new ArrayIterator($this->data);
+  }
+}

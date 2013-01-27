@@ -1313,3 +1313,62 @@ function entity_ctools_plugin_directory($module, $plugin) {
     return 'ctools/content_types';
   }
 }
+ = 'entity_metadata_create_node';
+  $entity_info['node']['save callback'] = 'node_save';
+  $entity_info['node']['deletion callback'] = 'node_delete';
+  $entity_info['node']['revision deletion callback'] = 'node_revision_delete';
+  $entity_info['user']['creation callback'] = 'entity_metadata_create_object';
+  $entity_info['user']['save callback'] = 'entity_metadata_user_save';
+  $entity_info['user']['deletion callback'] = 'user_delete';
+  $entity_info['file']['save callback'] = 'file_save';
+  $entity_info['file']['deletion callback'] = 'entity_metadata_delete_file';
+
+  // Form callbacks.
+  $entity_info['node']['form callback'] = 'entity_metadata_form_node';
+  $entity_info['user']['form callback'] = 'entity_metadata_form_user';
+
+  // View callbacks.
+  $entity_info['node']['view callback'] = 'entity_metadata_view_node';
+  $entity_info['user']['view callback'] = 'entity_metadata_view_single';
+
+  if (module_exists('comment')) {
+    $entity_info['comment']['plural label'] = t('Comments');
+    $entity_info['comment']['description'] = t('Remark or note that refers to a node.');
+    $entity_info['comment']['access callback'] = 'entity_metadata_comment_access';
+    $entity_info['comment']['creation callback'] = 'entity_metadata_create_comment';
+    $entity_info['comment']['save callback'] = 'comment_save';
+    $entity_info['comment']['deletion callback'] = 'comment_delete';
+    $entity_info['comment']['view callback'] = 'entity_metadata_view_comment';
+    $entity_info['comment']['form callback'] = 'entity_metadata_form_comment';
+  }
+  if (module_exists('taxonomy')) {
+    $entity_info['taxonomy_term']['plural label'] = t('Taxonomy terms');
+    $entity_info['taxonomy_term']['description'] = t('Taxonomy terms are used for classifying content.');
+    $entity_info['taxonomy_term']['access callback'] = 'entity_metadata_taxonomy_access';
+    $entity_info['taxonomy_term']['creation callback'] = 'entity_metadata_create_object';
+    $entity_info['taxonomy_term']['save callback'] = 'taxonomy_term_save';
+    $entity_info['taxonomy_term']['deletion callback'] = 'taxonomy_term_delete';
+    $entity_info['taxonomy_term']['view callback'] = 'entity_metadata_view_single';
+    $entity_info['taxonomy_term']['form callback'] = 'entity_metadata_form_taxonomy_term';
+
+    $entity_info['taxonomy_vocabulary']['plural label'] = t('Taxonomy vocabularies');
+    $entity_info['taxonomy_vocabulary']['description'] = t('Vocabularies contain related taxonomy terms, which are used for classifying content.');
+    $entity_info['taxonomy_vocabulary']['access callback'] = 'entity_metadata_taxonomy_access';
+    $entity_info['taxonomy_vocabulary']['creation callback'] = 'entity_metadata_create_object';
+    $entity_info['taxonomy_vocabulary']['save callback'] = 'taxonomy_vocabulary_save';
+    $entity_info['taxonomy_vocabulary']['deletion callback'] = 'taxonomy_vocabulary_delete';
+    $entity_info['taxonomy_vocabulary']['form callback'] = 'entity_metadata_form_taxonomy_vocabulary';
+    // Token type mapping.
+    $entity_info['taxonomy_term']['token type'] = 'term';
+    $entity_info['taxonomy_vocabulary']['token type'] = 'vocabulary';
+  }
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function entity_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' && $plugin == 'content_types') {
+    return 'ctools/content_types';
+  }
+}

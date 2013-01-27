@@ -126,3 +126,22 @@ function splashify_admin_when_form_submit($form, &$form_state) {
 function splashify_ajax_when_mobile_callback($form, &$form_state) {
   return $form['mobile']['options'];
 }
+}
+
+/**
+ * Implements form submit handler.
+ */
+function splashify_admin_when_form_submit($form, &$form_state) {
+  if ($form_state['values']['splashify_when_mobile'] != 1) {
+    // Unset these values, if the mobile option is disabled.
+    variable_set('splashify_when_mobile_frequency', 'never');
+    variable_set('splashify_when_mobile_test', 0);
+  }
+}
+
+/**
+ * Ajax callback for the "enable mobile" checkbox.
+ */
+function splashify_ajax_when_mobile_callback($form, &$form_state) {
+  return $form['mobile']['options'];
+}

@@ -1512,3 +1512,166 @@ class EntityMetadataIntegrationTestCase extends EntityWebTestCase {
     }
   }
 }
+nformation is still there after
+    // loading the node again, thus the correct data structure has been written.
+    node_save($node);
+    $node = node_load($node->nid, NULL, TRUE);
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    $this->assertEqual('the text', $wrapper->field_text2->value->value(), 'Text has been specified.');
+    $this->assertEqual('the summary', $wrapper->field_text2->summary->value(), 'Summary has been specified.');
+  }
+
+  /**
+   * Test making use of a file field.
+   */
+  function testFileFields() {
+    $file = $this->createFile();
+
+    // Create a file field.
+    $field = array(
+      'field_name' => 'field_file',
+      'type' => 'file',
+      'cardinality' => 2,
+      'settings' => array('display_field' => TRUE),
+    );
+    field_create_field($field);
+    $instance = array(
+      'field_name' => 'field_file',
+      'entity_type' => 'node',
+      'label' => 'File',
+      'bundle' => 'article',
+      'settings' => array('description_field' => TRUE),
+      'required' => FALSE,
+      'widget' => array(
+        'type' => 'file_generic',
+        'weight' => -1,
+      ),
+    );
+    field_create_instance($instance);
+
+    $node = $this->drupalCreateNode(array('type' => 'article'));
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    $wrapper->field_file[0] = array('fid' => $file->fid, 'display' => FALSE);
+    $this->assertEqual($file->filename, $wrapper->field_file[0]->file->name->value(), 'File has been specified.');
+
+    $wrapper->field_file[0]->description = 'foo';
+    $wrapper->field_file[0]->display = TRUE;
+
+    $this->assertEqual($wrapper->field_file[0]->description->value(), 'foo', 'File description has been correctly set.');
+
+    // Try saving the node and make sure the information is still there after
+    // loading the node again, thus the correct data structure has been written.
+    node_save($node);
+    $node = node_load($node->nid, NULL, TRUE);
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    $this->assertEqual($wrapper->field_file[0]->description->value(), 'foo', 'File description has been correctly set.');
+    $this->assertEqual($wrapper->field_file[0]->display->value(), TRUE, 'File display value has been correctly set.');
+
+    // Test adding a new file, the display-property has to be created
+    // automatically.
+    $wrapper->field_file[1]->file = $file;
+    node_save($node);
+    $node = node_load($node->nid, NULL, TRUE);
+    $this->assertEqual($file->fid, $wrapper->field_file[1]->file->getIdentifier(), 'New file has been added.');
+
+    // Test adding an invalid file-field item, i.e. without any file.
+    try {
+      $wrapper->field_file[] = array('description' => 'test');
+      $this->fail('Exception not thrown.');
+    }
+    catch (EntityMetadataWrapperException $e) {
+      $this->pass('Not valid file-field item has thrown an exception.');
+    }
+
+    // Test remove all file-field items.
+    $wrapper->field_file = NULL;
+    $this->assertFalse($wrapper->field_file->value(), 'Removed multiple file-field items.');
+  }
+
+  /**
+   * Test making use of an image field.
+   */
+  function testImageFields() {
+    $file = $this->createFile('image');
+
+    // Just use the image field on the article node.
+    $node = $this->drupalCreateNode(array('type' => 'article'));
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    $wrapper->field_image = array('fid' => $file->fid);
+    $this->assertEqual($file->filename, $wrapper->field_image->file->name->value(), 'File has been specified.');
+
+    $wrapper->field_image->alt = 'foo';
+    $this->assertEqual($wrapper->field_image->alt->value(), 'foo', 'Image alt attribute has been correctly set.');
+
+    // Try saving the node and make sure the information is still there after
+    // loading the node again, thus the correct data structure has been written.
+    node_save($node);
+    $node = node_load($node->nid, NULL, TRUE);
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    $this->assertEqual($wrapper->field_image->alt->value(), 'foo', 'File description has been correctly set.');
+
+    // Test adding a new image.
+    $wrapper->field_image->file = $file;
+    node_save($node);
+    $node = node_load($node->nid, NULL, TRUE);
+    $this->assertEqual($file->fid, $wrapper->field_image->file->getIdentifier(), 'New file has been added.');
+
+    // Test adding an invalid image-field item, i.e. without any file.
+    try {
+      $wrapper->field_image = array();
+      $this->fail('Exception not thrown.');
+    }
+    catch (EntityMetadataWrapperException $e) {
+      $this->pass('Not valid image-field item has thrown an exception.');
+    }
+  }
+
+  /**
+   * Creates a value for the given property.
+   */
+  protected function createValue($wrapper) {
+    if (!isset($this->node)) {
+      $this->node = $this->drupalCreateNode(array('type' => 'page'));
+      $this->user = $this->drupalCreateUser();
+      $this->taxonomy_vocabulary = $this->createVocabulary();
+    }
+
+    if ($options = $wrapper->optionsList()) {
+      $options = entity_property_options_flatten($options);
+      return $wrapper instanceof EntityListWrapper ? array(key($options)) : key($options);
+    }
+
+    // For mail addresses properly pass an mail address.
+    $info = $wrapper->info();
+    if ($info['name'] == 'mail') {
+      return 'webmaster@example.com';
+    }
+
+    switch ($wrapper->type()) {
+      case 'decimal':
+      case 'integer':
+      case 'duration':
+        return 1;
+      case 'date':
+        return REQUEST_TIME;
+      case 'boolean':
+        return TRUE;
+      case 'token':
+        return drupal_strtolower($this->randomName(8));
+      case 'text':
+        return $this->randomName(32);
+      case 'text_formatted':
+        return array('value' => $this->randomName(16));
+      case 'list<taxonomy_term>':
+        return array();
+
+      default:
+        return $this->{$wrapper->type()};
+    }
+  }
+}

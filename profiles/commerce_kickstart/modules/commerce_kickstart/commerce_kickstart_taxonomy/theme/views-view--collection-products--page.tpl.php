@@ -38,9 +38,9 @@
   <?php if ($header): ?>
   <div class="view-header" <?php if (isset($collection_image_url) && !empty($collection_image_url)): print 'style="background-image: url(' . $collection_image_url . ');"'; endif; ?>>
     <?php print $header; ?>
-    <div class="taxonomy-title" >
+    <span class="taxonomy-title" >
       <?php print $collection_title; ?>
-    </div>
+    </span>
   </div>
   <?php endif; ?>
 

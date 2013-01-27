@@ -801,3 +801,161 @@ class EntityAPIControllerExportable extends EntityAPIController {
     return $view;
   }
 }
+  }
+
+  /**
+   * Overridden.
+   * @see DrupalDefaultEntityController::attachLoad()
+   *
+   * Changed to call type-specific hook with the entities keyed by name if they
+   * have one.
+   */
+  protected function attachLoad(&$queried_entities, $revision_id = FALSE) {
+    // Attach fields.
+    if ($this->entityInfo['fieldable']) {
+      if ($revision_id) {
+        field_attach_load_revision($this->entityType, $queried_entities);
+      }
+      else {
+        field_attach_load($this->entityType, $queried_entities);
+      }
+    }
+
+    // Call hook_entity_load().
+    foreach (module_implements('entity_load') as $module) {
+      $function = $module . '_entity_load';
+      $function($queried_entities, $this->entityType);
+    }
+    // Call hook_TYPE_load(). The first argument for hook_TYPE_load() are
+    // always the queried entities, followed by additional arguments set in
+    // $this->hookLoadArguments.
+    // For entities with a name key, pass the entities keyed by name to the
+    // specific load hook.
+    if ($this->nameKey != $this->idKey) {
+      $entities_by_name = entity_key_array_by_property($queried_entities, $this->nameKey);
+    }
+    else {
+      $entities_by_name = $queried_entities;
+    }
+    $args = array_merge(array($entities_by_name), $this->hookLoadArguments);
+    foreach (module_implements($this->entityInfo['load hook']) as $module) {
+      call_user_func_array($module . '_' . $this->entityInfo['load hook'], $args);
+    }
+  }
+
+  public function resetCache(array $ids = NULL) {
+    $this->cacheComplete = FALSE;
+    if (isset($ids)) {
+      foreach (array_intersect_key($this->entityCache, array_flip($ids)) as $id => $entity) {
+        unset($this->entityCacheByName[$this->entityCache[$id]->{$this->nameKey}]);
+        unset($this->entityCache[$id]);
+      }
+    }
+    else {
+      $this->entityCache = array();
+      $this->entityCacheByName = array();
+    }
+  }
+
+  /**
+   * Overridden to care about reverted entities.
+   */
+  public function delete($ids, DatabaseTransaction $transaction = NULL) {
+    $entities = $ids ? $this->load($ids) : FALSE;
+    if ($entities) {
+      parent::delete($ids, $transaction);
+
+      foreach ($entities as $id => $entity) {
+        if (entity_has_status($this->entityType, $entity, ENTITY_IN_CODE)) {
+          entity_defaults_rebuild(array($this->entityType));
+          break;
+        }
+      }
+    }
+  }
+
+  /**
+   * Overridden to care about reverted bundle entities and to skip Rules.
+   */
+  public function invoke($hook, $entity) {
+    if ($hook == 'delete') {
+      // To ease figuring out whether this is a revert, make sure that the
+      // entity status is updated in case the providing module has been
+      // disabled.
+      if (entity_has_status($this->entityType, $entity, ENTITY_IN_CODE) && !module_exists($entity->{$this->moduleKey})) {
+        $entity->{$this->statusKey} = ENTITY_CUSTOM;
+      }
+      $is_revert = entity_has_status($this->entityType, $entity, ENTITY_IN_CODE);
+    }
+
+    if (!empty($this->entityInfo['fieldable']) && function_exists($function = 'field_attach_' . $hook)) {
+      $function($this->entityType, $entity);
+    }
+
+    if (isset($this->entityInfo['bundle of']) && $type = $this->entityInfo['bundle of']) {
+      // Call field API bundle attachers for the entity we are a bundle of.
+      if ($hook == 'insert') {
+        field_attach_create_bundle($type, $entity->{$this->bundleKey});
+      }
+      elseif ($hook == 'delete' && !$is_revert) {
+        field_attach_delete_bundle($type, $entity->{$this->bundleKey});
+      }
+      elseif ($hook == 'update' && $id = $entity->{$this->nameKey}) {
+        if ($entity->original->{$this->bundleKey} != $entity->{$this->bundleKey}) {
+          field_attach_rename_bundle($type, $entity->original->{$this->bundleKey}, $entity->{$this->bundleKey});
+        }
+      }
+    }
+    // Invoke the hook.
+    module_invoke_all($this->entityType . '_' . $hook, $entity);
+    // Invoke the respective entity level hook.
+    if ($hook == 'presave' || $hook == 'insert' || $hook == 'update' || $hook == 'delete') {
+      module_invoke_all('entity_' . $hook, $entity, $this->entityType);
+    }
+  }
+
+  /**
+   * Overridden to care exportables that are overridden.
+   */
+  public function save($entity, DatabaseTransaction $transaction = NULL) {
+    // Preload $entity->original by name key if necessary.
+    if (!empty($entity->{$this->nameKey}) && empty($entity->{$this->idKey}) && !isset($entity->original)) {
+      $entity->original = entity_load_unchanged($this->entityType, $entity->{$this->nameKey});
+    }
+    // Update the status for entities getting overridden.
+    if (entity_has_status($this->entityType, $entity, ENTITY_IN_CODE) && empty($entity->is_rebuild)) {
+      $entity->{$this->statusKey} |= ENTITY_CUSTOM;
+    }
+    return parent::save($entity, $transaction);
+  }
+
+  /**
+   * Overridden.
+   */
+  public function export($entity, $prefix = '') {
+    $vars = get_object_vars($entity);
+    unset($vars[$this->statusKey], $vars[$this->moduleKey], $vars['is_new']);
+    if ($this->nameKey != $this->idKey) {
+      unset($vars[$this->idKey]);
+    }
+    return entity_var_json_export($vars, $prefix);
+  }
+
+  /**
+   * Implements EntityAPIControllerInterface.
+   */
+  public function view($entities, $view_mode = 'full', $langcode = NULL, $page = NULL) {
+    $view = parent::view($entities, $view_mode, $langcode, $page);
+
+    if ($this->nameKey != $this->idKey) {
+      // Re-key the view array to be keyed by name.
+      $return = array();
+      foreach ($view[$this->entityType] as $id => $content) {
+        $key = isset($content['#entity']->{$this->nameKey}) ? $content['#entity']->{$this->nameKey} : NULL;
+        $return[$this->entityType][$key] = $content;
+      }
+      $view = $return;
+    }
+    return $view;
+  }
+}

@@ -293,3 +293,23 @@ class Entity {
 class EntityDB extends Entity {}
 class EntityExtendable extends Entity {}
 class EntityDBExtendable extends Entity {}
+d may
+    // be easily overridden and customized.
+    return drupal_map_assoc(array_keys($vars));
+  }
+
+  /**
+   * Magic method to invoke setUp() on unserialization.
+   */
+  public function __wakeup() {
+    $this->setUp();
+  }
+}
+
+/**
+ * These classes are deprecated by "Entity" and are only here for backward
+ * compatibility reasons.
+ */
+class EntityDB extends Entity {}
+class EntityExtendable extends Entity {}
+class EntityDBExtendable extends Entity {}
