@@ -42,3 +42,8 @@ xmlrpc.php
 .settings
 /backup
 /tmp
+sites/default/settings.php
+
+themes/.DS_Store
+
+themes/.DS_Store
