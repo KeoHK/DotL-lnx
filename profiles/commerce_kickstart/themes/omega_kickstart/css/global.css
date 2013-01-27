@@ -348,6 +348,7 @@ select {
         color: white;
         display: block;
         float: left;
+        font-size: 0.8em;
         /* LTR */
         font-family: "Open Sans", sans-serif;
         font-weight: 300;
@@ -355,10 +356,16 @@ select {
         line-height: 30px;
         margin: 0 0 0 5px;
         /* LTR */
-        padding: 0 10px; }
+        padding: 0 5px; }
+        .block-shopping-cart-block .content .view-shopping-cart .line-item-summary ul.links li.line-item-summary-checkout {
+	        font-size: 1em;
+        }
         .block-shopping-cart-block .content .view-shopping-cart .line-item-summary ul.links li {
-          margin: 0;
-          padding: 0; }
+          	margin: 0;
+          	padding: 0;
+          	margin-right: 5px;
+			border-right: 1px solid #ffffff;
+			padding-right: 5px; }
           .block-shopping-cart-block .content .view-shopping-cart .line-item-summary ul.links li a {
             color: white;
             font-weight: 700; }
@@ -369,7 +376,7 @@ select {
 * 2.2. Zone branding
 **********************************************/
 .zone-branding .region-branding {
-  margin: 50px 0 15px 0; }
+  margin: 15px 0 15px 0; }
   .zone-branding .region-branding .logo-img {
     float: none;
     margin: 10px 0;
@@ -1989,6 +1996,60 @@ ol.inline.commerce-checkout-progress {
     padding: 6px 12px; }
 
 /**
+* Term of service
+*/
+
+.terms-of-service {
+	height: 200px;
+	overflow: auto;
+}
+	.terms-of-service .comment-comments {
+		visibility: hidden;
+		height: 0px;
+	}
+	.terms-of-service .form-item-extra-pane--node--7-termsofservice {
+		font-size: 1.2em;
+		top: -50px;
+		position: relative;
+		left: 200px;
+	}
+.extra_pane__node__7 {
+	height: 200px;
+	overflow: auto;
+}	
+
+/**
+* Barcode
+*/
+
+#edit-commerce-fieldgroup-pane-group-order-additional-info-field-order-barcode {
+	visibility: hidden;
+	height: 0px;
+}
+
+/**
+* Tabella campi multipli
+*/
+
+.field-multiple-table {
+	width: 100%;
+}
+
+/**
+* Div campi multipli
+*/
+
+.commerce_fieldgroup_pane__group_order_additional_info form-wrapper {
+	height: auto;
+}
+.field-name-field-guests-info {
+	border: 1px solid #E5E5E5;
+	margin: 10px;
+	padding-bottom: 15px;
+}
+
+
+/**
 * Checkout page
 * Review order page
 * Checkout complete page
@@ -2135,7 +2196,7 @@ ol.inline.commerce-checkout-progress {
   /* LTR */
   margin: 5px 3% 0 0;
   /* LTR */
-  width: 45%; }
+  width: 100%; }
   .page-user-orders .field-name-commerce-customer-billing .field-label,
   .page-user-orders .field-name-commerce-customer-shipping .field-label {
     background-color: #E5E5E5;
